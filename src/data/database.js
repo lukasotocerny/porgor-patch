@@ -48,8 +48,8 @@ let validateAnswer = (q, a, fn) => {
             fn(false);
         } else {
             let answerSheet = JSON.parse(data);
-            if (answerSheet.answers[q]) {
-                const res = answerSheet.answers[q]==a.toString();
+            if (answerSheet[q]) {
+                const res = answerSheet[q]==a.toString();
                 console.log("Question " + q + " was " + (res ? "correct." : "incorrect."));
                 fn(res);
             } else {
@@ -60,21 +60,105 @@ let validateAnswer = (q, a, fn) => {
     })
 };
 
+let validateLogin = (team, password, fn) => {
+    console.log("Validating login credentials of " + team);
+    fs.readFile("loginSheet.json", (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            try {
+                const teamLogins = JSON.parse(data);
+                if (teamLogins[team]) {
+                    if (teamLogins[team]==password) {
+                        console.log("Team " + team + " correct login.");
+                        fn(true);
+                    } else {
+                        console.log("Team " + team + " incorrect login.");
+                        fn(false);
+                    }
+                } else {
+                    console.log("Team " + team + " not registered.");
+                    fn(false);
+                }
+            } catch (e) {
+                console.log("Team is not registered.");
+            }
+        }
+    })
+}
+
+let registerLogin = (team, password, fn) => {
+    console.log("Validating login credentials of " + team);
+    fs.readFile("loginSheet.json", (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            try {
+                let teamLogins = JSON.parse(data);
+                if (teamLogins[team]) {
+                    console.log("Team " + team + " already registered.");
+                    fn(false);
+                } else {
+                    console.log("Team " + team + " not registered. Lets register it...");
+                    teamLogins[team] = password;
+                    fs.writeFile('loginSheet.json', JSON.stringify(teamLogins), (err) => {
+                        if (err) {
+                            console.log(err) 
+                        } else {
+                            console.log("Team " + team + " has been successfully registered.");
+                            fn(true);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.log("Team " + team + " not registered. Lets register it...");
+                const newTeamLogins = {[team]: password};
+                fs.writeFile('loginSheet.json', JSON.stringify(newTeamLogins), (err) => {
+                    if (err) {
+                        console.log(err) 
+                    } else {
+                        console.log("Team " + team + " has been successfully registered.");
+                        fn(true);
+                    }
+                });
+            }
+        }
+    })
+}
+
 let addOfficialAnswer = (q, a) => {
     fs.readFile("answerSheet.json", (err, data) => {
         if (err) {
             console.log(err);
         } else {
             try {
-                let raw = JSON.parse(data);
-                raw.answers[q] = a;
-                fs.writeFile('answerSheet.json', JSON.stringify(raw), (err) => (err) ? console.log(err) : console.log("Answer for question " + q + " was recorded."));
+                let answers = JSON.parse(data);
+                answers[q] = a;
+                fs.writeFile('answerSheet.json', JSON.stringify(answers), (err) => (err) ? console.log(err) : console.log("Answer for question " + q + " was recorded."));
             } catch (e) {
-                let raw = {answers: {[q] : a}};
-                fs.writeFile('answerSheet.json', JSON.stringify(raw), (err) => (err) ? console.log(err) : console.log("Answer for question " + q + " was recorded."));
+                let answers = {[q] : a};
+                fs.writeFile('answerSheet.json', JSON.stringify(answers), (err) => (err) ? console.log(err) : console.log("Answer for question " + q + " was recorded."));
             }
         }
     })
 }
 
-addOfficialAnswer("7","1");
+let getPassword = (user, pass, team, fn) => {
+    fs.readFile("loginSheet.json", (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            try {
+                let teamLogins = JSON.parse(data);
+                if (user=="admin" && teamLogins.admin && pass==teamLogins.admin) {
+                    console.log("admin logged in.");
+                    (teamLogins[team]) ? fn(teamLogins[team]) : fn(null);
+                }
+            } catch (e) {
+                console.log("No login data.");
+                fn(null);
+            }
+        }
+    })
+
+}
