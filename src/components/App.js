@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 import PatchTable from './PatchTable';
 import TimeCountdown from './TimeCountdown';
+import Login from './Login';
 
 export default class App extends Component {
 
   constructor() {
     super();
-    this.state = { page: "countdown" };
+    this.state = { page: "login" };
   }
 
   render() {
@@ -16,6 +17,8 @@ export default class App extends Component {
             return (<TimeCountdown />);
         } else if (this.state.page=="patchtable") {
             return (<PatchTable />);
+        } else if (this.state.page=="login") {
+            return (<Login />);
         } else {
             return (<TimeCountdown />);
         }
