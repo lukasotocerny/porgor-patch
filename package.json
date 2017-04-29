@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "countdown": "^2.6.0",
+    "fs": "0.0.1-security",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"
   },
