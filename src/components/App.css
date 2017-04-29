@@ -1,0 +1,46 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #222;
+  height: 100px;
+  padding: 1px;
+  text-align: center;
+}
+
+.App-header h2 {
+  color: white;
+}
+
+.App-header ul {
+display: table;
+width: 100%;
+list-style: none;
+}
+
+.App-header ul li {
+display: table-cell;
+text-align: center;
+color: white;
+}
+
+.App-header ul li button {
+background-color: transparent;
+color: white;
+border: transparent;
+text-transform: capitalize;
+font-size: 16px;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.App-box {
+  margin: 50px auto;
+  width: 800px;
+  height: 400px;
+  border: solid rgba(150,150,150,0.5) 2px;
+  background-color: rgba(196,196,196,0.5);
+}
