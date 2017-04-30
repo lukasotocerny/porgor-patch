@@ -8,7 +8,7 @@ export default class App extends Component {
 
   constructor() {
     super();
-    this.state = { page: "login" };
+    this.state = { page: "countdown" };
   }
 
   render() {
@@ -33,8 +33,8 @@ export default class App extends Component {
         <div className="App-header">
           <h2>Porgor Patch 2017</h2>
           <ul>
+            <li><button onClick={()=>linkClick("login")}>Log in</button></li>
             <li><button onClick={()=>linkClick("patchtable")}>Scoreboard</button></li>
-            <li><button onClick={()=>linkClick("countdown")}>Submit</button></li>
             <li><button onClick={()=>linkClick("countdown")}>My Questions</button></li>
           </ul>
         </div>

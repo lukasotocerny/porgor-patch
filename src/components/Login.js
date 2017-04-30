@@ -15,6 +15,7 @@ export default class Login extends React.Component {
                             <option value="white">White</option>
                             <option value="black">Black</option>
                             <option value="blue">Blue</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </label>
                     <label className="labelText">

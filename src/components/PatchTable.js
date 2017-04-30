@@ -1,44 +1,41 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import TeamRow from './TeamRow.js';
+import './PatchTable.css';
 
 const datab = require('../data/database.js');
 
 export default class PatchTable extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        }
+    }
+
     render() {
 
-        const teamBox = {
-            height: 10,
-            width: 80,
-            padding: 1,
-            margin: 2,
-            fontSize: '16',
-            display: 'inline-block',
-            textAlign: 'center',
-        };
-        const teamNameBox = {...teamBox, width: 80,fontWeight: "bold"};
-        const teamPointsBox = {...teamBox, width: 30, fontWeight: "bold"};
-        const solversHeadline = {
-            marginTop: 30,
-            marginBottom: 10,
-            textTransform: "uppercase",
-            fontWeight: "bold"
-        }
-
-        const teams = datab.scoreSheet;
+        const teams = {"red":{"color":"red","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
+        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}},
+        "blue":{"color":"blue","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
+        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}},
+        "black":{"color":"black","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
+        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}},
+        "white":{"color":"white","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
+        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}}}
 
         return (
             <div style={{paddingTop:15,marginRight:10}}>
                 <ul>
-                    <li style={teamNameBox}>Team</li>
-                    <li style={teamNameBox}>Points</li>
-                    {Object.keys(teams[0].questions).map((el,i) => <li style={teamPointsBox}>{i+1}</li>)}
+                    <li className="teamDescriptionNameBox">Team</li>
+                    <li className="teamDescriptionNameBox">Points</li>
+                    {Object.keys(teams.red.questions).map((el,i) => <li className="teamDescriptionPointsBox">{i+1}</li>)}
                 </ul>
-                {teams.map(team =>
-                    <TeamRow color={team.color} questions={team.questions} points={team.points} />
+                {Object.keys(teams).map(key =>
+                    <TeamRow color={teams[key].color} questions={teams[key].questions} points={teams[key].points} />
                 )}
-                <div style={solversHeadline}>Best Solvers</div>
+                <div className="solversHeadline">Best Solvers</div>
 
                 <div>lukas cerny - 12 questions</div>
                 <div>leonard euler - 9 questions</div>
