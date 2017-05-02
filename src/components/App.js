@@ -8,29 +8,24 @@ export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { page: "countdown", loggedIn: "no team" };
+        this.state = { page: "countdown", loggedIn: false, teamLoggedIn: "" };
     }
 
     render() {
-        const logInFn = (team) => {
-            this.setState({loggedIn: team});
-        }
+        const logIn = (team) => this.setState({loggedIn: true, teamLoggedIn: team});
+        const logOut = () => this.setState({loggedIn: false});
+        const linkClick = (arg) => this.setState({page:arg});
         const boxRender = () => {
             if (this.state.page=="countdown") {
                 return (<TimeCountdown />);
             } else if (this.state.page=="patchtable") {
                 return (<PatchTable />);
             } else if (this.state.page=="login") {
-                return (<Login logInFn={logInFn} loggedIn={this.state.loggedIn}/>);
+                return (<Login logIn={logIn} logOut={logOut} loggedIn={this.state.loggedIn} teamLoggedIn={this.state.teamLoggedIn}/>);
             } else {
                 return (<TimeCountdown />);
             }
         }
-
-        const linkClick = (arg) => {
-            this.setState({page:arg});
-        }
-
         return (
           <div className="App">
             <div className="App-header">
