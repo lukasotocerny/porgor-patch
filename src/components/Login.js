@@ -1,12 +1,12 @@
 import React from 'react';
 import './Login.css';
-import Request from 'request';
+let request = require('request');
 
 export default class Login extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { team: null, serverResponse: false };
+        this.state = { team: null, serverResponse: "init" };
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -16,11 +16,13 @@ export default class Login extends React.Component {
 
     render() {
         const validateLogInFromServer = (team, pass) => {
-            Request.post({url: "http://localhost:8080/login", form:{text:"hi"}}, (err, res, body) => {
+            this.setState({serverResponse:"loading"})
+            request({url: "http://localhost:8080/login"}, (err, res, body) => {
                 if (err) {
-                    return (<p>{err}</p>);
+                    console.log("Err");
+                    return this.setState({serverResponse:"err"});
                 } else {
-                    return (<p>{body}</p>);
+                    return this.setState({serverResponse:"success"});
                 }
             });
         }
@@ -43,7 +45,8 @@ export default class Login extends React.Component {
                         <input className="inputLogin" type="text" name="name" />
                     </label>
                 </form>
-                <button onClick={()=>this.props.logIn(this.state.team)}>Login</button>
+                <button onClick={()=>validateLogInFromServer("red","hi")}>Login</button>
+                <p>{this.state.serverResponse}</p>
             </div>
         )
     }

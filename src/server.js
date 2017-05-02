@@ -7,12 +7,13 @@ const PORT = process.env.PORT || 8080;
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
 app.get('/', function (req, res) {
-  console.log(__dirname);
-  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+    console.log(__dirname);
+    res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
 app.get('/login', function (req, res) {
-  console.log(req.text);
+    console.log("New client.");
+    res.send("hi");
 })
 
 app.listen(PORT);
