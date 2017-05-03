@@ -1,6 +1,8 @@
 import React from 'react';
 import './Login.css';
-var request = require('request');
+import AdminPage from './AdminPage.js';
+
+const request = require('request');
 
 export default class Login extends React.Component {
 
@@ -34,11 +36,16 @@ export default class Login extends React.Component {
         }
 
         const loggedInText = () => {
-            return (
-            <div>
-                <div className="headlineText">{this.props.teamLoggedIn} is logged in.</div>
-                <button className="loginButton" onClick={()=>this.props.logOut()}>Log out</button>
-            </div>)
+            if (this.props.teamLoggedIn=="admin") {
+                return (<AdminPage />)
+            } else {
+                return (
+                    <div>
+                        <div className="headlineText">{this.props.teamLoggedIn} is logged in.</div>
+                        <button className="loginButton" onClick={()=>this.props.logOut()}>Log out</button>
+                    </div>
+                )
+            }
         }
 
         const logInForm = () => {
@@ -48,11 +55,11 @@ export default class Login extends React.Component {
                         <label className="labelText">
                             Team:  
                             <select value={this.state.team} onChange={this.handleChange}>
-                                <option selected value="red">Red</option>
+                                <option value="red">Red</option>
                                 <option value="white">White</option>
                                 <option value="black">Black</option>
                                 <option value="blue">Blue</option>
-                                <option value="admin">Admin</option>
+                                <option selected value="admin">Admin</option>
                             </select>
                         </label>
                         <label className="labelText">

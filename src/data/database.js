@@ -4,8 +4,8 @@ const teams = ["red", "blue", "black", "white"];
 
 const getRandomArbitrary = (min, max) => Math.random() * (max - min) + min;
 
-let getScoreSheet = (fn) => {
-    fs.readFile("scoreSheet.json", (err, data) => {
+let getTeamSheet = (fn) => {
+    fs.readFile("teamSheet.json", (err, data) => {
         if (err) {
             console.log(err);
         } else {
@@ -16,7 +16,7 @@ let getScoreSheet = (fn) => {
 
 let updateScore = (team, question, fn) => {
     console.log("Updating score...");
-    fs.readFile("scoreSheet.json", (err, data) => {
+    fs.readFile("teamSheet.json", (err, data) => {
         if (err) {
             console.log(err);
         } else {
@@ -27,7 +27,7 @@ let updateScore = (team, question, fn) => {
                     fn(true);
                 } else {
                     file[team].points++;
-                    fs.writeFile('scoreSheet.json', JSON.stringify(file), (err) => {
+                    fs.writeFile('teamSheet.json', JSON.stringify(file), (err) => {
                         if (err) {
                             console.log(err);
                             fn(false);
@@ -39,7 +39,7 @@ let updateScore = (team, question, fn) => {
                 }
             } catch (e) {
                 let file = {[team]:{"color":team,"points":1,"questions":{[question]:"correct"}}};
-                fs.writeFile('scoreSheet.json', JSON.stringify(file), (err) => {
+                fs.writeFile('teamSheet.json', JSON.stringify(file), (err) => {
                     if (err) {
                         console.log(err);
                         fn(false);
@@ -263,5 +263,5 @@ module.exports = {
     "validateLogin": validateLogin,
     "getPassword": getPassword,
     "addSubmission": addSubmission,
-    "getScoreSheet": getScoreSheet
+    "getTeamSheet": getTeamSheet
 }
