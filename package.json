@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "body-parser": "^1.17.1",
     "countdown": "^2.6.0",
     "fs": "0.0.1-security",
     "react": "^15.5.4",

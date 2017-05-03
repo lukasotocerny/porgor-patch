@@ -1,13 +1,28 @@
 .headlineText {
     font-weight: bold;
-    margin-top: 100px;
+    margin-top: 140px;
     margin-bottom: 20px;
 }
 
 .labelText {
     padding: 20px;
+    font-weight: bold;
+}
+
+.loginForm {
+    margin-top: 140px;
 }
 
 .inputLogin {
     margin: 10px;
+}
+
+.loginButton {
+    width: 150px;
+    height: 30px;
+    margin-top: 10px;
+    background-color: rgba(90,90,90,0.2);
+    font-weight: bold;
+    text-transform: capitalize;
+    border: solid 1px black;
 }

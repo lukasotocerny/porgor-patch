@@ -8,7 +8,7 @@ export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { page: "countdown", loggedIn: false, teamLoggedIn: "" };
+        this.state = { page: "login", loggedIn: true, teamLoggedIn: "red" };
     }
 
     render() {
