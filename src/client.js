@@ -1,11 +1,16 @@
-var request = require('request');
+const request = require('request');
+const database = require('./data/database.js');
 
 console.log("Starting a client.");
 
-request({url: "http://localhost:8080/login"}, function(err,res,body) {
+const postRequest = () => request({url: "http://localhost:8080/login"}, function(err,res,body) {
     if (err) {
         console.log(err);
     } else {
         console.log(body);
     }
 });
+
+const databaseQuery = () => database.addMember("blue","novyblue",()=>console.log("yes"));
+
+databaseQuery();

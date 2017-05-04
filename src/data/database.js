@@ -170,7 +170,7 @@ let validateLogin = (team, password, fn) => {
     })
 }
 
-let registerLogin = (team, password, fn) => {
+let addPassword = (team, password, fn) => {
     console.log("Validating login credentials of " + team);
     fs.readFile("loginSheet.json", (err, data) => {
         if (err) {
@@ -203,6 +203,33 @@ let registerLogin = (team, password, fn) => {
                         fn(false);
                     } else {
                         console.log("Team " + team + " has been successfully registered.");
+                        fn(true);
+                    }
+                });
+            }
+        }
+    })
+}
+
+let addMember = (team, member, fn) => {
+    console.log("Adding member " + member + " to team " + team);
+    fs.readFile("./data/teamSheet.json", (err, data) => {
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            let teams = JSON.parse(data);
+            if (teams[team].members.find((el)=>el==member)) {
+                console.log("Member" + member + " already registered.");
+                fn(false);
+            } else {
+                console.log("Member " + member + " not registered. Lets register it...");
+                teams[team].members.push(member);
+                fs.writeFile('./data/teamSheet.json', JSON.stringify(teams), (err) => {
+                    if (err) {
+                        console.log(err) 
+                    } else {
+                        console.log("Member " + member + " has been successfully registered.");
                         fn(true);
                     }
                 });
@@ -259,9 +286,10 @@ let getPassword = (user, pass, team, fn) => {
 
 module.exports = {
     "addOfficialAnswer": addOfficialAnswer,
-    "registerLogin": registerLogin,
+    "addPassword": addPassword,
     "validateLogin": validateLogin,
     "getPassword": getPassword,
     "addSubmission": addSubmission,
-    "getTeamSheet": getTeamSheet
+    "getTeamSheet": getTeamSheet,
+    "addMember": addMember
 }

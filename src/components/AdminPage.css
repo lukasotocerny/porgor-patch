@@ -17,3 +17,12 @@
     text-transform: capitalize;
     font-size: 16px;
 }
+
+.adminTeams ul li {
+    display: inline;
+    color: black;
+}
+
+.adminPageBold {
+    font-weight: bold;
+}
