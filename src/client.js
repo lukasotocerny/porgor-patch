@@ -13,4 +13,6 @@ const postRequest = () => request({url: "http://localhost:8080/login"}, function
 
 const databaseQuery = () => database.addMember("blue","novyblue",()=>console.log("yes"));
 
-databaseQuery();
+const data = {"id":1,"team":"red"};
+
+console.log(data.id);

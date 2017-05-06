@@ -1,0 +1,6 @@
+{
+    "1":{"number":1, "problem":"What is the solution to x^2+y^2=0?", "answer":"1.54"},
+    "2":{"number":2, "problem":"What is the solution to x^2=70 mod 121?", "answer":"2"},
+    "3":{"number":3,"problem":"How many sudoku games are there?","answer":"5"},
+    "4":{"number":4,"problem":"Average of 1 and 3?","answer":"1500"}
+}

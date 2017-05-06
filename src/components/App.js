@@ -3,6 +3,7 @@ import './App.css';
 import PatchTable from './PatchTable';
 import TimeCountdown from './TimeCountdown';
 import Login from './Login';
+import MyQuestions from './MyQuestions.js';
 
 export default class App extends Component {
 
@@ -22,6 +23,8 @@ export default class App extends Component {
                 return (<PatchTable />);
             } else if (this.state.page=="login") {
                 return (<Login logIn={logIn} logOut={logOut} loggedIn={this.state.loggedIn} teamLoggedIn={this.state.teamLoggedIn}/>);
+            } else if (this.state.page=="myquestions") {
+                return (<MyQuestions loggedIn={this.state.loggedIn} teamLoggedIn={this.state.teamLoggedIn} />)
             } else {
                 return (<TimeCountdown />);
             }
@@ -33,7 +36,7 @@ export default class App extends Component {
               <ul>
                 <li><button onClick={()=>linkClick("login")}>Log in</button></li>
                 <li><button onClick={()=>linkClick("patchtable")}>Scoreboard</button></li>
-                <li><button onClick={()=>linkClick("countdown")}>My Questions</button></li>
+                <li><button onClick={()=>linkClick("myquestions")}>My Questions</button></li>
               </ul>
             </div>
             <div className="App-box">

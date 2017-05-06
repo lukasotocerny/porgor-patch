@@ -1,22 +1,104 @@
 const fs = require('fs');
+const path = require('path');
 
 const teams = ["red", "blue", "black", "white"];
 
 const getRandomArbitrary = (min, max) => Math.random() * (max - min) + min;
 
-let getTeamSheet = (fn) => {
-    fs.readFile("teamSheet.json", (err, data) => {
+let getTeam = (team, fn) => {
+    fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
+            fn(false);
         } else {
-            fn(JSON.parse(data));
+            const teams = JSON.parse(data);
+            fn(teams[team]);
+        }
+    })
+}
+
+let getSubmission = (team, fn) => {
+    fs.readFile(path.join(__dirname, "submissionSheet.json"), (err, data) => {
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            const submissions = JSON.parse(data).submissions;
+            fn(submissions.filter((el) => el["color"]==team ? true : false));
+        }
+    })
+}
+
+let getPassword = (team, fn) => {
+    fs.readFile(path.join(__dirname, "loginSheet.json"), (err, data) => {
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            try {
+                let teamLogins = JSON.parse(data);
+                if (teamLogins[team]) {
+                    console.log("Password of team " + team + " is " + teamLogins[team]);
+                    fn(teamLogins[team])
+                } else {
+                    console.log("Team " + team + " is not registered.");
+                    fn(false);
+                }
+            } catch (e) {
+                console.log("No login data.");
+                fn(false);
+            }
+        }
+    })
+}
+
+let getQuestions = (team, fn) => {
+    fs.readFile(path.join(__dirname, "questionSheet.json"), (err, data) => {
+        console.log("Retrieving questions for ".concat(team.toUpperCase()));
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            try {
+                let questions = JSON.parse(data);
+                let result = { questions:[], currQuestion:null };
+                for (let i=0;i<200;i++) {
+                    if (questions[i]) {
+                        (result.currQuestion) ? null : result.currQuestion=i;
+                        result.questions.push(questions[i]);
+                    }
+                }
+                fn(result);
+            } catch (e) {
+                console.log("There are no questions yet.");
+                fn(false);
+            }
+        }
+    })
+}
+
+let modifyPassword = (team, new_password, fn) => {
+    fs.readFile(path.join(__dirname, "loginSheet.json"), (err, data) => {
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            const teams = JSON.parse(data);
+            teams[team] = new_password;
+            fs.writeFile(path.join(__dirname, "loginSheet.json"), JSON.stringify(teams), (err) => {
+                if (err) {
+                    fn(false)
+                } else {
+                    fn(true)
+                };
+            });
         }
     })
 }
 
 let updateScore = (team, question, fn) => {
     console.log("Updating score...");
-    fs.readFile("teamSheet.json", (err, data) => {
+    fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
         } else {
@@ -27,7 +109,7 @@ let updateScore = (team, question, fn) => {
                     fn(true);
                 } else {
                     file[team].points++;
-                    fs.writeFile('teamSheet.json', JSON.stringify(file), (err) => {
+                    fs.writeFile(path.join(__dirname, "teamSheet.json"), JSON.stringify(file), (err) => {
                         if (err) {
                             console.log(err);
                             fn(false);
@@ -39,7 +121,7 @@ let updateScore = (team, question, fn) => {
                 }
             } catch (e) {
                 let file = {[team]:{"color":team,"points":1,"questions":{[question]:"correct"}}};
-                fs.writeFile('teamSheet.json', JSON.stringify(file), (err) => {
+                fs.writeFile(path.join(__dirname, "teamSheet.json"), JSON.stringify(file), (err) => {
                     if (err) {
                         console.log(err);
                         fn(false);
@@ -54,7 +136,7 @@ let updateScore = (team, question, fn) => {
 
 let addSubmission = (team, question, answer, solvers, fn) => {
     console.log("Team " + team + " submitting question " + question);
-    fs.readFile('submissionSheet.json', (err, data) => {
+    fs.readFile(path.join(__dirname, "submissionSheet.json"), (err, data) => {
         if (err){
             console.log(err);
             fn(false);
@@ -63,6 +145,7 @@ let addSubmission = (team, question, answer, solvers, fn) => {
                 let submissionSheet = JSON.parse(data);
                 const date = new Date();
                 validateAnswer(question, answer, (correct) => {
+                    const id = getRandomArbitrary(0,100000000000000);
                     const newSubmission = 
                     {
                         "color":team,
@@ -70,12 +153,13 @@ let addSubmission = (team, question, answer, solvers, fn) => {
                         "answer":answer,
                         "solvers":solvers,
                         "time":date.getHours().toString().concat(":",date.getMinutes().toString()),
-                        "correct":correct
+                        "correct":correct,
+                        "id": id,
                     };
                     console.log("New submission: \n" + JSON.stringify(newSubmission));
                     submissionSheet.submissions.push(newSubmission);
                     const json = JSON.stringify(submissionSheet);
-                    fs.writeFile('submissionSheet.json', json, (err) => {
+                    fs.writeFile(path.join(__dirname, "submissionSheet.json"), json, (err) => {
                         if (err) {
                             console.log(err);
                             fn(false);
@@ -91,6 +175,7 @@ let addSubmission = (team, question, answer, solvers, fn) => {
                 });
             } catch (e) {
                 const date = new Date();
+                const id = getRandomArbitrary(0,100000000000000);
                 validateAnswer(question, answer, (correct) => {
                     const newSubmission = 
                     {
@@ -99,12 +184,13 @@ let addSubmission = (team, question, answer, solvers, fn) => {
                         "answer":answer,
                         "solvers":solvers,
                         "time":date.getHours().toString().concat(":",date.getMinutes().toString()),
-                        "correct":correct
+                        "correct":correct,
+                        "id": id
                     };
                     console.log("New submission: \n" + JSON.stringify(newSubmission));
                     const submissionSheet = {"submission":[newSubmission]};
                     const json = JSON.stringify(submissionSheet);
-                    fs.writeFile('submissionSheet.json', json, (err) => {
+                    fs.writeFile(path.join(__dirname, "submissionSheet.json"), json, (err) => {
                         if (err) {
                             console.log(err);
                             fn(false);
@@ -123,14 +209,14 @@ let addSubmission = (team, question, answer, solvers, fn) => {
 }
 
 let validateAnswer = (q, a, fn) => {
-    fs.readFile('answerSheet.json', (err, data) => {
+    fs.readFile(path.join(__dirname, "questionSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
             fn(false);
         } else {
-            let answerSheet = JSON.parse(data);
-            if (answerSheet[q]) {
-                const res = answerSheet[q]==a.toString();
+            let questionSheet = JSON.parse(data);
+            if (questionSheet[q]) {
+                const res = questionSheet[q].answer==a.toString();
                 console.log("Question " + q + " was " + (res ? "correct." : "incorrect."));
                 fn(res);
             } else {
@@ -143,7 +229,7 @@ let validateAnswer = (q, a, fn) => {
 
 let validateLogin = (team, password, fn) => {
     console.log("Validating login credentials of " + team);
-    fs.readFile("loginSheet.json", (err, data) => {
+    fs.readFile(path.join(__dirname, "loginSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
             fn(false);
@@ -172,7 +258,7 @@ let validateLogin = (team, password, fn) => {
 
 let addPassword = (team, password, fn) => {
     console.log("Validating login credentials of " + team);
-    fs.readFile("loginSheet.json", (err, data) => {
+    fs.readFile(path.join(__dirname,"loginSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
             fn(false);
@@ -185,7 +271,7 @@ let addPassword = (team, password, fn) => {
                 } else {
                     console.log("Team " + team + " not registered. Lets register it...");
                     teamLogins[team] = password;
-                    fs.writeFile('loginSheet.json', JSON.stringify(teamLogins), (err) => {
+                    fs.writeFile(path.join(__dirname,"loginSheet.json"), JSON.stringify(teamLogins), (err) => {
                         if (err) {
                             console.log(err) 
                         } else {
@@ -197,7 +283,7 @@ let addPassword = (team, password, fn) => {
             } catch (e) {
                 console.log("Team " + team + " not registered. Lets register it...");
                 const newTeamLogins = {[team]: password};
-                fs.writeFile('loginSheet.json', JSON.stringify(newTeamLogins), (err) => {
+                fs.writeFile(path.join(__dirname,"loginSheet.json"), JSON.stringify(newTeamLogins), (err) => {
                     if (err) {
                         console.log(err);
                         fn(false);
@@ -213,7 +299,7 @@ let addPassword = (team, password, fn) => {
 
 let addMember = (team, member, fn) => {
     console.log("Adding member " + member + " to team " + team);
-    fs.readFile("./data/teamSheet.json", (err, data) => {
+    fs.readFile(path.join(__dirname,"teamSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
             fn(false);
@@ -225,7 +311,7 @@ let addMember = (team, member, fn) => {
             } else {
                 console.log("Member " + member + " not registered. Lets register it...");
                 teams[team].members.push(member);
-                fs.writeFile('./data/teamSheet.json', JSON.stringify(teams), (err) => {
+                fs.writeFile(path.join(__dirname,"teamSheet.json"), JSON.stringify(teams), (err) => {
                     if (err) {
                         console.log(err) 
                     } else {
@@ -255,41 +341,42 @@ let addOfficialAnswer = (q, a) => {
     })
 }
 
-let getPassword = (user, pass, team, fn) => {
-    fs.readFile("loginSheet.json", (err, data) => {
-        if (err) {
-            console.log(err);
-            fn(null);
+let engine = (method, object, specifier, value, fn) => {
+    if (method=="get") {
+        if (object=="team") {
+            getTeam(specifier, (res) => fn(res));
+        } else if (object=="submission") {
+            getSubmission(specifier, (res) => fn(res));
+        } else if (object=="password") {
+            getPassword(specifier, (res) => fn(res));
+        } else if (object=="questions") {
+            getQuestions(specifier, (res) => fn(res));
         } else {
-            try {
-                let teamLogins = JSON.parse(data);
-                if (user=="admin" && teamLogins.admin && pass==teamLogins.admin) {
-                    console.log("admin logged in.");
-                    if (teamLogins[team]) {
-                        console.log("Password of team " + team + " is " + teamLogins[team]);
-                        fn(teamLogins[team])
-                    } else {
-                        console.log("Team " + team + " is not registered.");
-                        fn(null);
-                    }
-                } else {
-                    console.log("User does not have right to view passwords.");
-                    fn(null);
-                }
-            } catch (e) {
-                console.log("No login data.");
-                fn(null);
-            }
+            return fn(false);
         }
-    })
+    } else if (method=="add") {
+        if (object=="member") {
+            addMember(specifier, value, (res) => fn(res));
+        } else if (object=="password") {
+            addPassword(specifier, value, (res) => fn(res));
+        } else if (object=="submission") {
+            addSubmission(specifier, value.question, value.answer, [], (res) => fn(res));        
+        } else {
+            fn(false);
+        }
+    } else if (method=="modify") {
+        if (!value || value.length==0) {
+            fn(false);
+        } else if (object=="password") {
+            modifyPassword(specifier, value, (res) => fn(res));
+        } else {
+            fn(false);
+        }
+    } else {
+        fn(false);
+    }
 }
 
 module.exports = {
-    "addOfficialAnswer": addOfficialAnswer,
-    "addPassword": addPassword,
-    "validateLogin": validateLogin,
-    "getPassword": getPassword,
-    "addSubmission": addSubmission,
-    "getTeamSheet": getTeamSheet,
-    "addMember": addMember
+    "engine": engine
 }

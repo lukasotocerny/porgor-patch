@@ -1,0 +1,30 @@
+.myQuestions ul {
+    display: table;
+    width: 100%;
+    list-style: none;
+}
+
+.myQuestions ul li {
+    display: table-cell;
+    text-align: center;
+}
+
+.myQuestions ul li button {
+    background-color: transparent;
+    color: rgba(50,50,50,0.8);
+    border: transparent;
+    text-transform: capitalize;
+    font-size: 16px;
+}
+
+.question {
+    margin-top: 150px;
+    color: rgba(30,30,30,0.9);
+}
+
+.submitButton {
+    margin-left: 20px;
+    background-color: transparent;
+    border: solid rgba(30,30,30,0.9) 1px;
+    color: rgba(30,30,30,0.9);
+}

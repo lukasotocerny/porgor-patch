@@ -26,11 +26,57 @@ app.post('/database', function (req, res) {
     const object = req.body.object;
     const specifier = req.body.specifier;
     const value = req.body.value;
-    console.log("Performing ".concat(method, " on ", object, " of ", specifier));
-    database.addMember(specifier, value, () => {
-        console.log("Succesfully performed operation ".concat(method, " on ", specifier, " ", object));
-        res.send("Succesfully performed operation ".concat(method, " on ", specifier, " ", object));
-    });    
+    console.log("Performing ".concat(method.toUpperCase(), object.toUpperCase(), " on ", specifier.toUpperCase()));   
+    if (method=="get") {
+        database.engine(method, object, specifier, value, (data) => {
+            if (data) {
+                console.log("Succesfully performed operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+                res.send(data);
+            } else {
+                console.log("Error on operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+                res.send("Error on operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+            }
+        });
+    } else {
+        database.engine(method, object, specifier, value, (data) => {
+            if (data) {
+                console.log("Succesfully performed operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+                res.send("Succesfully performed operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+            } else {
+                console.log("Error on operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+                res.send("Error on operation ".concat(method.toUpperCase(), " ", object.toUpperCase(), " on ", specifier.toUpperCase()));
+            }
+        });
+    }
+})
+
+app.post('/submit', function(req, res) {
+    const specifier = req.body.team;
+    const value = {"answer":req.body.answer, "question":req.body.question};
+    console.log("Submitting question ".concat(req.body.question, " for team ",specifier.toUpperCase()));
+    database.engine("add", "submission", specifier, value, (data) => {
+        if (data) {
+            console.log("Team ".concat(specifier.toUpperCase(), " correctly answered question ", req.body.question));
+            res.send("correct");
+        } else {
+            console.log("Team ".concat(specifier.toUpperCase(), " incorrectly answered question ", req.body.question));
+            res.send("incorrect");
+        }
+    })
+});
+
+app.post('/getquestions', function (req, res) {
+    const team = req.body.team;
+    console.log("Getting questions for team ".concat(team.toUpperCase()));
+    database.engine("get", "questions", team, null, (data) => {
+        if (data) {
+            console.log("Successfully retrieved questions for team ".concat(team.toUpperCase()));
+            res.send(data);
+        } else {
+            console.log("Error in retrieving questions for team ".concat(team.toUpperCase()));
+            res.send(null);
+        }
+    })
 })
 
 app.listen(PORT, () => {
