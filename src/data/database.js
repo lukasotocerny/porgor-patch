@@ -38,10 +38,10 @@ let getPassword = (team, fn) => {
             try {
                 let teamLogins = JSON.parse(data);
                 if (teamLogins[team]) {
-                    console.log("Password of team " + team + " is " + teamLogins[team]);
+                    console.log("Password of team " + team.toUpperCase() + " is " + teamLogins[team]);
                     fn(teamLogins[team])
                 } else {
-                    console.log("Team " + team + " is not registered.");
+                    console.log("Team " + team.toUpperCase() + " is not registered.");
                     fn(false);
                 }
             } catch (e) {
@@ -257,7 +257,7 @@ let validateLogin = (team, password, fn) => {
 }
 
 let addPassword = (team, password, fn) => {
-    console.log("Validating login credentials of " + team);
+    console.log("Validating login credentials of " + team.toUpperCase());
     fs.readFile(path.join(__dirname,"loginSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
@@ -275,7 +275,7 @@ let addPassword = (team, password, fn) => {
                         if (err) {
                             console.log(err) 
                         } else {
-                            console.log("Team " + team + " has been successfully registered.");
+                            console.log("Team " + team.toUpperCase() + " has been successfully registered.");
                             fn(true);
                         }
                     });
@@ -298,7 +298,7 @@ let addPassword = (team, password, fn) => {
 }
 
 let addMember = (team, member, fn) => {
-    console.log("Adding member " + member + " to team " + team);
+    console.log("Adding member " + member + " to team " + team.toUpperCase());
     fs.readFile(path.join(__dirname,"teamSheet.json"), (err, data) => {
         if (err) {
             console.log(err);

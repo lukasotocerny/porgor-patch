@@ -9,7 +9,7 @@ export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { page: "login", loggedIn: true, teamLoggedIn: "admin" };
+        this.state = { page: "countdown", loggedIn: false, teamLoggedIn: null };
     }
 
     render() {
@@ -34,9 +34,9 @@ export default class App extends Component {
             <div className="App-header">
               <h2>Porgor Patch 2017</h2>
               <ul>
-                <li><button onClick={()=>linkClick("login")}>Log in</button></li>
+                <li><button onClick={()=>linkClick("countdown")}>Log in</button></li>
                 <li><button onClick={()=>linkClick("patchtable")}>Scoreboard</button></li>
-                <li><button onClick={()=>linkClick("myquestions")}>My Questions</button></li>
+                <li><button onClick={()=>linkClick("countdown")}>My Questions</button></li>
               </ul>
             </div>
             <div className="App-box">
