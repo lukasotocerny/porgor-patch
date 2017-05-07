@@ -22,9 +22,27 @@
     color: rgba(30,30,30,0.9);
 }
 
+.labelText {
+    font-weight: normal;
+}
+
 .submitButton {
-    margin-left: 20px;
+    margin-top: 10px;
+    width: 100px;
+    height: 25px;
+    font-weight: bold;
     background-color: transparent;
     border: solid rgba(30,30,30,0.9) 1px;
     color: rgba(30,30,30,0.9);
+}
+
+.solvers {
+    margin-left: 5px;
+}
+
+.deleteSolver {
+    background-color: transparent;
+    color: rgba(30,30,30,0.5);
+    border: 1px solid rgba(30,30,30,0.5);
+    border-radius: 100%;
 }

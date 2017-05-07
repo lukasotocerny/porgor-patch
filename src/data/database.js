@@ -102,33 +102,25 @@ let updateScore = (team, question, fn) => {
         if (err) {
             console.log(err);
         } else {
-            try {
-                let file = JSON.parse(data);
-                if (file[team].questions[question] == "correct") {
-                    console.log("Points have been already added.");
-                    fn(true);
-                } else {
-                    file[team].points++;
-                    fs.writeFile(path.join(__dirname, "teamSheet.json"), JSON.stringify(file), (err) => {
-                        if (err) {
-                            console.log(err);
-                            fn(false);
-                        } else {
-                            console.log("Point successfully added.");
-                            fn(true);
-                        };
-                    });
-                }
-            } catch (e) {
-                let file = {[team]:{"color":team,"points":1,"questions":{[question]:"correct"}}};
+            let file = JSON.parse(data);
+            if (!file[team].questions[question]) {
+                console.log("Question ".concat(question, " does not exist."));
+                fn(false);
+            } else if (file[team].questions[question] == "correct") {
+                console.log("Points have been already added.");
+                fn(true);
+            } else {
+                file[team].points++;
+                file[team].questions[question] = "correct";
                 fs.writeFile(path.join(__dirname, "teamSheet.json"), JSON.stringify(file), (err) => {
                     if (err) {
                         console.log(err);
                         fn(false);
                     } else {
+                        console.log("Point successfully added.");
                         fn(true);
                     };
-                }); 
+                });
             }
         }
     })
@@ -228,7 +220,7 @@ let validateAnswer = (q, a, fn) => {
 };
 
 let validateLogin = (team, password, fn) => {
-    console.log("Validating login credentials of " + team);
+    console.log("Validating login credentials of " + team.toUpperCase());
     fs.readFile(path.join(__dirname, "loginSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
@@ -238,14 +230,20 @@ let validateLogin = (team, password, fn) => {
                 const teamLogins = JSON.parse(data);
                 if (teamLogins[team]) {
                     if (teamLogins[team]==password) {
-                        console.log("Team " + team + " correct login.");
-                        fn(true);
+                        console.log("Team " + team.toUpperCase() + " correct login.");
+                        getTeam(team, (teamInfo) => {
+                            if (teamInfo) {
+                                fn(teamInfo.members);
+                            } else {
+                                fn(false);
+                            }
+                        });
                     } else {
-                        console.log("Team " + team + " incorrect login.");
+                        console.log("Team " + team.toUpperCase() + " incorrect login.");
                         fn(false);
                     }
                 } else {
-                    console.log("Team " + team + " not registered.");
+                    console.log("Team " + team.toUpperCase() + " not registered.");
                     fn(false);
                 }
             } catch (e) {
@@ -360,7 +358,7 @@ let engine = (method, object, specifier, value, fn) => {
         } else if (object=="password") {
             addPassword(specifier, value, (res) => fn(res));
         } else if (object=="submission") {
-            addSubmission(specifier, value.question, value.answer, [], (res) => fn(res));        
+            addSubmission(specifier, value.question, value.answer, value.solvers, (res) => fn(res));        
         } else {
             fn(false);
         }
@@ -372,6 +370,8 @@ let engine = (method, object, specifier, value, fn) => {
         } else {
             fn(false);
         }
+    } else if (method=="login") {
+        validateLogin(specifier, value, (res) => fn(res));
     } else {
         fn(false);
     }

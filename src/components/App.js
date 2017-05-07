@@ -9,13 +9,13 @@ export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { page: "countdown", loggedIn: false, teamLoggedIn: null };
+        this.state = { page:"login", loggedIn:true, teamLoggedIn:"admin", teamMembers:["lukas","ota"] }; 
     }
 
     render() {
-        const logIn = (team) => this.setState({loggedIn: true, teamLoggedIn: team});
-        const logOut = () => this.setState({loggedIn: false});
-        const linkClick = (arg) => this.setState({page:arg});
+        const logIn = (team, members) => this.setState({ loggedIn:true, teamLoggedIn:team, teamMembers:members });
+        const logOut = () => this.setState({ loggedIn:false, teamMembers:null, teamLoggedIn:null });
+        const linkClick = (arg) => this.setState({ page:arg });
         const boxRender = () => {
             if (this.state.page=="countdown") {
                 return (<TimeCountdown />);
@@ -24,7 +24,7 @@ export default class App extends Component {
             } else if (this.state.page=="login") {
                 return (<Login logIn={logIn} logOut={logOut} loggedIn={this.state.loggedIn} teamLoggedIn={this.state.teamLoggedIn}/>);
             } else if (this.state.page=="myquestions") {
-                return (<MyQuestions loggedIn={this.state.loggedIn} teamLoggedIn={this.state.teamLoggedIn} />)
+                return (<MyQuestions loggedIn={this.state.loggedIn} teamLoggedIn={this.state.teamLoggedIn} teamMembers={this.state.teamMembers} />)
             } else {
                 return (<TimeCountdown />);
             }
@@ -34,9 +34,9 @@ export default class App extends Component {
             <div className="App-header">
               <h2>Porgor Patch 2017</h2>
               <ul>
-                <li><button onClick={()=>linkClick("countdown")}>Log in</button></li>
+                <li><button onClick={()=>linkClick("login")}>Log in</button></li>
                 <li><button onClick={()=>linkClick("patchtable")}>Scoreboard</button></li>
-                <li><button onClick={()=>linkClick("countdown")}>My Questions</button></li>
+                <li><button onClick={()=>linkClick("myquestions")}>My Questions</button></li>
               </ul>
             </div>
             <div className="App-box">

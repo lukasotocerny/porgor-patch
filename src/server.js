@@ -17,8 +17,18 @@ app.get('/', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
-    console.log("Login request.");
-    res.send("true");
+    const team = req.body.team;
+    const password = req.body.password;
+    console.log("Login request for team ".concat(team.toUpperCase(), " with password: ", password));
+    database.engine("login", null, team, password, (data) => {
+        if (data) {
+            console.log("Succesful login for team ".concat(team.toUpperCase()));
+            res.send(data);
+        } else {
+            console.log("Incorrect login for team ".concat(team.toUpperCase()));
+            res.send("false");
+        }
+    })
 });
 
 app.post('/database', function (req, res) {
@@ -52,7 +62,7 @@ app.post('/database', function (req, res) {
 
 app.post('/submit', function(req, res) {
     const specifier = req.body.team;
-    const value = {"answer":req.body.answer, "question":req.body.question};
+    const value = {"answer":req.body.answer, "question":req.body.question, "solvers":req.body.solvers };
     console.log("Submitting question ".concat(req.body.question, " for team ",specifier.toUpperCase()));
     database.engine("add", "submission", specifier, value, (data) => {
         if (data) {
