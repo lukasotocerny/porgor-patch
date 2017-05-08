@@ -6,7 +6,7 @@ export default class AdminPageQuery extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {method:"add",object:"team",specifier:"red",value:"",serverResponse:"not loaded"};
+        this.state = {method:"add",object:"team",specifier:"red",value:"",serverResponse:"No query executed"};
         this.handleChangeMethod = this.handleChangeMethod.bind(this);
         this.handleChangeObject = this.handleChangeObject.bind(this);
         this.handleChangeSpecifier = this.handleChangeSpecifier.bind(this);
@@ -78,8 +78,8 @@ export default class AdminPageQuery extends React.Component {
                         </label></li>
                     </form>
                 </ul>
-                <button onClick={()=>sendQuery(this.state.method, this.state.object, this.state.specifier, this.state.value)}>Submit</button>
-                <p>{this.state.serverResponse}</p>
+                <button className="queryButton" onClick={()=>sendQuery(this.state.method, this.state.object, this.state.specifier, this.state.value)}>Submit</button>
+                <p className="queryResponse">{this.state.serverResponse}</p>
             </div>
         )
     }

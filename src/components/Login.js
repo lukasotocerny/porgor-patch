@@ -82,7 +82,7 @@ export default class Login extends React.Component {
                 <div>
                     <form className="loginForm">
                         <label className="labelText">
-                            Team:  
+                            <span>Team:</span>  
                             <select value={this.state.team} onChange={this.changeTeam}>
                                 <option value="red">Red</option>
                                 <option value="white">White</option>
@@ -92,7 +92,7 @@ export default class Login extends React.Component {
                             </select>
                         </label>
                         <label className="labelText">
-                            Password:
+                            <span>Password:</span>
                             <input onChange={this.changePassword} className="inputLogin" type="text" name="name" />
                         </label>
                     </form>

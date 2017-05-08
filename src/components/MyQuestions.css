@@ -13,25 +13,40 @@
     background-color: transparent;
     color: rgba(50,50,50,0.8);
     border: transparent;
-    text-transform: capitalize;
-    font-size: 16px;
+    text-transform: uppercase;
+    font-size: 13px;
 }
 
 .question {
     margin-top: 150px;
-    color: rgba(30,30,30,0.9);
+    margin-bottom: 20px;
+    color: rgba(50,50,50,0.8);
 }
 
-.labelText {
+.answerInput {
+    background-color: rgba(240,240,240,0.9);
+    border: 1px solid rgba(30,30,30,0.8);
+}
+
+.solver {
     font-weight: normal;
+    font-size: 12px;
+}
+
+.labelText span {
+    font-weight: normal;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-right: 8px;
 }
 
 .submitButton {
-    margin-top: 10px;
+    margin-top: 15px;
     width: 100px;
     height: 25px;
     font-weight: bold;
     background-color: transparent;
+    text-transform: uppercase;
     border: solid rgba(30,30,30,0.9) 1px;
     color: rgba(30,30,30,0.9);
 }
@@ -43,6 +58,9 @@
 .deleteSolver {
     background-color: transparent;
     color: rgba(30,30,30,0.5);
-    border: 1px solid rgba(30,30,30,0.5);
+    border: 1px solid rgba(30,30,30,0.3);
     border-radius: 100%;
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 12px;
 }

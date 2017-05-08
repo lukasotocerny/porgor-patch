@@ -10,6 +10,7 @@ export default class MyQuestions extends React.Component {
         this.getQuestion = this.getQuestion.bind(this);
         this.changeAnswer = this.changeAnswer.bind(this);
         this.submitQuestion = this.submitQuestion.bind(this);
+        this.responseText = this.responseText.bind(this);
         this.state = { "currentQuestion":null, "answer":null, "correct":false, "solvers":[] };
     }
 
@@ -35,7 +36,9 @@ export default class MyQuestions extends React.Component {
     }
 
     submitQuestion = () => {
-        if (this.state.answer) {
+        console.log("Submit button clicked.");
+        if (this.state.answer && this.state.solvers.length>0) {
+            console.log("Conditions met. Sending request.");
             request.post({url:"http://localhost:8080/submit", form:{ "team":this.props.team.color, "question":this.state.currentQuestion, "answer":this.state.answer, "solvers":this.state.solvers }}, (err,res,body) => {
                 if (body=="correct") {
                     this.props.updateState((data) => {
@@ -47,6 +50,10 @@ export default class MyQuestions extends React.Component {
                     setTimeout(()=>this.setState({correct:false}), 3000);
                 }
             })
+        } else {
+            console.log("Missing answer or solvers field.");
+            this.setState({ "correct":"information" });
+            setTimeout(()=>this.setState({ "correct":false }), 3000);
         }
     }
 
@@ -66,6 +73,18 @@ export default class MyQuestions extends React.Component {
         }
     }
 
+    responseText = () => {
+        if (this.state.correct=="information") {
+            return (<p>Please fill all the information</p>);
+        } else if (this.state.correct=="correct") {
+            return (<p>Correct!</p>);
+        } else if (this.state.correct=="incorrect") {
+            return (<p>Incorrect!</p>);
+        } else {
+            return null;
+        }
+    }
+
     render() {
         const loggedInPage = () => {
             if (this.props.loggedIn) {
@@ -78,29 +97,29 @@ export default class MyQuestions extends React.Component {
                         </ul>
                         <p className="question">{this.getQuestion()}</p>
                         <label className="labelText">
-                            Answer:
-                            <input value={this.state.answer} onChange={this.changeAnswer}/>
+                            <span>Answer:</span>
+                            <input className="answerInput" value={this.state.answer} onChange={this.changeAnswer}/>
                         </label>
                         <label className="labelText">
-                            Solvers:
+                            <span>Solvers:</span>
                             <select onChange={this.addSolver}>
                                 <option></option>
                                 {this.props.team.members.map((el) => (<option>{el}</option>))}
                             </select>
                         </label>
                         <span className="solvers">
-                            {this.state.solvers.map((el) => (<span>{el}, </span>))}
+                            {this.state.solvers.map((el) => (<span className="solver">{el}, </span>))}
                         </span>
                         <button onClick={this.deleteSolver} className="deleteSolver">-</button>
                         <br/>
                         <button onClick={this.submitQuestion} className="submitButton">Submit</button>
-                        {(this.state.correct) ? (this.state.correct=="correct") ? (<p>Correct!</p>) : (<p>Incorrect!</p>) : null}
+                        {this.responseText()}
                     </div>
                 )
             } else {
                 return (
                     <div>
-                        <p style={{fontWeight:"bold"}} className="question">You have to login.</p>
+                        <p className="question">You have to login.</p>
                     </div>
                 )
             }

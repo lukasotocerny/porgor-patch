@@ -1,28 +1,26 @@
 .adminPage ul {
     display: table;
-    width: 100%;
+    margin-left: 80px;
+    margin-top: 0px;
     list-style: none;
 }
 
 .adminPage ul li {
     display: table-cell;
     text-align: center;
-    color: white;
+    color: rgba(50,50,50,0.8);
+    font-size: 13px;
+    text-transform: uppercase;
+    padding-left: 20px;
 }
 
-.adminPage ul li button {
-    background-color: transparent;
-    color: rgba(20,20,20,0.8);
-    border: transparent;
-    text-transform: capitalize;
-    font-size: 16px;
-}
-
-.adminTeams ul li {
-    display: inline;
-    color: black;
-}
-
-.adminPageBold {
+.queryButton {
+    margin-top: 5px;
+    width: 100px;
+    height: 25px;
     font-weight: bold;
+    background-color: transparent;
+    text-transform: uppercase;
+    border: solid rgba(30,30,30,0.9) 1px;
+    color: rgba(30,30,30,0.9);
 }

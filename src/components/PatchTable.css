@@ -3,42 +3,63 @@
     width: 80px;
     padding: 1px;
     margin: 2px;
-    font-size: 16px;
+    margin-top: 25px;
+    font-size: 13px;
     display: inline-block;
     text-align: center;
+    font-weight: bold;
+    color: rgba(50,50,50,0.8);
 }
 
 .teamDescriptionNameBox {
     width: 80px;
-    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .teamDescriptionPointsBox {
     width: 30px;
-    font-weight: bold;
 }
 
-.solversHeadline {
-    margin-top: 30px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
-.teamNameBox, .teamPointsBox {
+.teamNameBox, .teamTotalPointsBox, .teamPointsBox {
     height: 30px;
     margin: 2px;
-    font-size: 16px;
+    font-size: 13px;
     display: inline-block;
     text-align: center;
     border: 1px solid black;
     vertical-align: middle;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .teamNameBox {
     width: 80px;
+    color: transparent;
 }
+
+.teamTotalPointsBox {
+    width: 80px;
+    color: rgba(50,50,50,0.8);
+}
+
 
 .teamPointsBox {
     width: 30px;
+    color: rgba(180,180,180,1);
+}
+
+.solversHeadline {
+    margin-top: 50px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(50,50,50,0.8);
+    font-size: 13px;
+}
+
+.solvers {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: rgba(50,50,50,0.8);
+    padding: 5px;
 }

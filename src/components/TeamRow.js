@@ -15,7 +15,7 @@ export default class TeamRow extends React.Component {
         return (
             <ul>
                 <li className="teamNameBox" style={{backgroundColor: this.props.color}}>{this.props.color}</li>
-                <li className="teamNameBox">{this.props.points}</li>
+                <li className="teamTotalPointsBox">{this.props.points}</li>
                 {Object.values(this.props.questions).map(question => correctPoint(question))}
             </ul>
         )

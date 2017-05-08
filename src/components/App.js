@@ -6,7 +6,7 @@ import TimeCountdown from './TimeCountdown';
 import Login from './Login';
 import MyQuestions from './MyQuestions.js';
 
-const testTeam = { color:"red", members:["lukas","ota"], questions:[{"number":1,"problem":"How are you?"}, {"number":2,"problem":"How old are you?"}] };
+const testTeam = { color:"admin", members:["lukas","ota"], questions:[{"number":1,"problem":"How are you?"}, {"number":2,"problem":"How old are you?"}] };
 
 export default class App extends Component {
 

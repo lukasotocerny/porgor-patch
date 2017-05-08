@@ -5,6 +5,8 @@ import './PatchTable.css';
 
 const datab = require('../data/database.js');
 
+const solvers = ["lukas cerny 12", "leonard euler 8", "carl gauss 3"];
+
 export default class PatchTable extends React.Component {
 
     constructor(props) {
@@ -36,10 +38,7 @@ export default class PatchTable extends React.Component {
                     <TeamRow color={teams[key].color} questions={teams[key].questions} points={teams[key].points} />
                 )}
                 <div className="solversHeadline">Best Solvers</div>
-
-                <div>lukas cerny - 12 questions</div>
-                <div>leonard euler - 9 questions</div>
-                <div>carl gauss - 3 questions</div>
+                {solvers.map((el) => (<div className="solvers">{el}</div>))}
             </div>
         )
     }
