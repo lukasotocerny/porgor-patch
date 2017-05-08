@@ -52,27 +52,36 @@ let getPassword = (team, fn) => {
     })
 }
 
-let getQuestions = (team, fn) => {
-    fs.readFile(path.join(__dirname, "questionSheet.json"), (err, data) => {
-        console.log("Retrieving questions for ".concat(team.toUpperCase()));
+let getData = (team, fn) => {
+    console.log("Retrieving questions for ".concat(team.toUpperCase()));
+    fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
         if (err) {
-            console.log(err);
+            console.log("Error in reading teamSheet.json");
             fn(false);
         } else {
-            try {
-                let questions = JSON.parse(data);
-                let result = { questions:[], currQuestion:null };
-                for (let i=0;i<200;i++) {
-                    if (questions[i]) {
-                        (result.currQuestion) ? null : result.currQuestion=i;
-                        result.questions.push(questions[i]);
+            const teams = JSON.parse(data);
+            fs.readFile(path.join(__dirname, "questionSheet.json"), (err, data2) => {
+                if (err) {
+                    console.log("Error in reading questionSheet.json");
+                    fn(false);
+                } else {
+                    let i=1;
+                    const officialQuestions = JSON.parse(data2);
+                    let response = {
+                        questions: [],
+                        members: teams[team].members,
+                        color: team
+                    };
+                    while (officialQuestions[i] && response.questions.length<5) {
+                        if (teams[team].questions[i]!="correct") {
+                            console.log("Adding question ".concat(i, " to stack of ", team));
+                            response.questions.push(officialQuestions[i]);
+                        }
+                        i++;
                     }
+                    fn(response);
                 }
-                fn(result);
-            } catch (e) {
-                console.log("There are no questions yet.");
-                fn(false);
-            }
+            });
         }
     })
 }
@@ -103,10 +112,7 @@ let updateScore = (team, question, fn) => {
             console.log(err);
         } else {
             let file = JSON.parse(data);
-            if (!file[team].questions[question]) {
-                console.log("Question ".concat(question, " does not exist."));
-                fn(false);
-            } else if (file[team].questions[question] == "correct") {
+            if (file[team].questions[question]!==null && file[team].questions[question] == "correct") {
                 console.log("Points have been already added.");
                 fn(true);
             } else {
@@ -231,13 +237,7 @@ let validateLogin = (team, password, fn) => {
                 if (teamLogins[team]) {
                     if (teamLogins[team]==password) {
                         console.log("Team " + team.toUpperCase() + " correct login.");
-                        getTeam(team, (teamInfo) => {
-                            if (teamInfo) {
-                                fn(teamInfo.members);
-                            } else {
-                                fn(false);
-                            }
-                        });
+                        fn(true);
                     } else {
                         console.log("Team " + team.toUpperCase() + " incorrect login.");
                         fn(false);
@@ -347,8 +347,8 @@ let engine = (method, object, specifier, value, fn) => {
             getSubmission(specifier, (res) => fn(res));
         } else if (object=="password") {
             getPassword(specifier, (res) => fn(res));
-        } else if (object=="questions") {
-            getQuestions(specifier, (res) => fn(res));
+        } else if (object=="data") {
+            getData(specifier, (res) => fn(res));
         } else {
             return fn(false);
         }

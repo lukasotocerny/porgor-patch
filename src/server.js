@@ -23,7 +23,7 @@ app.post('/login', function (req, res) {
     database.engine("login", null, team, password, (data) => {
         if (data) {
             console.log("Succesful login for team ".concat(team.toUpperCase()));
-            res.send(data);
+            res.send("correct");
         } else {
             console.log("Incorrect login for team ".concat(team.toUpperCase()));
             res.send("false");
@@ -75,15 +75,15 @@ app.post('/submit', function(req, res) {
     })
 });
 
-app.post('/getquestions', function (req, res) {
+app.post('/getteamdata', function (req, res) {
     const team = req.body.team;
-    console.log("Getting questions for team ".concat(team.toUpperCase()));
-    database.engine("get", "questions", team, null, (data) => {
+    console.log("Getting team data for team ".concat(team.toUpperCase()));
+    database.engine("get", "data", team, null, (data) => {
         if (data) {
-            console.log("Successfully retrieved questions for team ".concat(team.toUpperCase()));
+            console.log("Successfully retrieved data for team ".concat(team.toUpperCase()));
             res.send(data);
         } else {
-            console.log("Error in retrieving questions for team ".concat(team.toUpperCase()));
+            console.log("Error in retrieving data for team ".concat(team.toUpperCase()));
             res.send(null);
         }
     })

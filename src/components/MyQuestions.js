@@ -10,9 +10,7 @@ export default class MyQuestions extends React.Component {
         this.getQuestion = this.getQuestion.bind(this);
         this.changeAnswer = this.changeAnswer.bind(this);
         this.submitQuestion = this.submitQuestion.bind(this);
-        this.getQuestionsFromServer = this.getQuestionsFromServer.bind(this);
-        this.state = { myQuestions:null, currentQuestion:null, answer:null, correct:false, solvers:[] };
-        this.getQuestionsFromServer();
+        this.state = { "currentQuestion":null, "answer":null, "correct":false, "solvers":[] };
     }
 
     changeQuestion = (q) => {
@@ -23,29 +21,12 @@ export default class MyQuestions extends React.Component {
         this.setState({answer:e.target.value});
     }
 
-    getQuestionsFromServer = () => {
-        console.log("Getting questions from server.");
-        if (this.props.loggedIn) {
-            request.post({url:"http://localhost:8080/getquestions",form:{team:this.props.teamLoggedIn}}, (err,res,body) => {
-                if (body) {
-                    console.log("Received answer.");
-                    let data = JSON.parse(body);
-                    this.setState({myQuestions:data.questions, currentQuestion:data.currQuestion});
-                } else {
-                    this.setState({myQuestions:null});
-                }
-            })
-        } else {
-            return null;
-        }
-    }
-
     getQuestion = () => {
-        if (this.state.myQuestions) {
-            const n = this.state.myQuestions.length;
+        if (this.props.team.questions) {
+            const n = this.props.team.questions.length;
             for (let i=0;i<n;i++) {
-                if (this.state.myQuestions[i].number==this.state.currentQuestion) {
-                    return this.state.myQuestions[i].problem;
+                if (this.props.team.questions[i].number==this.state.currentQuestion) {
+                    return this.props.team.questions[i].problem;
                 }
             }
         } else {
@@ -55,12 +36,14 @@ export default class MyQuestions extends React.Component {
 
     submitQuestion = () => {
         if (this.state.answer) {
-            request.post({url:"http://localhost:8080/submit", form:{team:this.props.teamLoggedIn, question:this.state.currentQuestion, answer:this.state.answer, solvers:this.state.solvers }}, (err,res,body) => {
+            request.post({url:"http://localhost:8080/submit", form:{ "team":this.props.team.color, "question":this.state.currentQuestion, "answer":this.state.answer, "solvers":this.state.solvers }}, (err,res,body) => {
                 if (body=="correct") {
-                    this.setState({correct:"correct"});
-                    setTimeout(()=>this.setState({correct:false}), 3000);
+                    this.props.updateState((data) => {
+                        this.setState({"correct":"correct", "answer":"", "solvers":[]});
+                        setTimeout(()=>this.setState({correct:false}), 3000);
+                    })
                 } else {
-                    this.setState({correct:"incorrect"});
+                    this.setState({ "correct":"incorrect" });
                     setTimeout(()=>this.setState({correct:false}), 3000);
                 }
             })
@@ -71,7 +54,7 @@ export default class MyQuestions extends React.Component {
         if (this.state.solvers.lastIndexOf(e.target.value)==-1 && e.target.value!="") {
             const newSolvers = this.state.solvers;
             newSolvers.push(e.target.value);
-            this.setState({ solvers: newSolvers })
+            this.setState({ "solvers": newSolvers })
         }
     }
 
@@ -79,7 +62,7 @@ export default class MyQuestions extends React.Component {
         if (this.state.solvers.length > 0) {
             const newSolvers = this.state.solvers;
             newSolvers.pop();
-            this.setState({ solvers:newSolvers });
+            this.setState({ "solvers":newSolvers });
         }
     }
 
@@ -89,7 +72,7 @@ export default class MyQuestions extends React.Component {
                 return (
                     <div className="myQuestions">
                         <ul>
-                            {this.state.myQuestions && this.state.myQuestions.map((el) => {
+                            {this.props.team.questions && this.props.team.questions.map((el) => {
                                 return (<li><button onClick={()=>this.changeQuestion(el.number)}>Question {el.number}</button></li>);
                             })}
                         </ul>
@@ -102,7 +85,7 @@ export default class MyQuestions extends React.Component {
                             Solvers:
                             <select onChange={this.addSolver}>
                                 <option></option>
-                                {this.props.teamMembers.map((el) => (<option>{el}</option>))}
+                                {this.props.team.members.map((el) => (<option>{el}</option>))}
                             </select>
                         </label>
                         <span className="solvers">
