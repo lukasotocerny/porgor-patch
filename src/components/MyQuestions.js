@@ -87,7 +87,7 @@ export default class MyQuestions extends React.Component {
 
     render() {
         const loggedInPage = () => {
-            if (this.props.loggedIn) {
+            if (this.props.loggedIn && this.props.team.color!="admin") {
                 return (
                     <div className="myQuestions">
                         <ul>

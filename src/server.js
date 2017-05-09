@@ -87,6 +87,39 @@ app.post('/getteamdata', function (req, res) {
             res.send(null);
         }
     })
+});
+
+app.get('/getscoresheet', (req, res) => {
+    console.log("Getting score sheet.");
+    database.engine("get", "scoresheet", null, null, (data) => {
+        if (data) {
+            console.log("Successfully retrieved score sheet.");
+            res.send(data);
+        } else {
+            console.log("Error in retrieving score sheet.");
+            res.send(null);
+        }
+    })  
+});
+
+app.post('/reset', (req,res) => {
+    console.log("Reseting...");
+    const password = req.body.password;
+    const n = req.body.n;
+    if (password=="2382017") {
+        console.log("Password correct.");
+        database.engine("reset", null, null, n, (data) => {
+            if (data) {
+                console.log("Reset successful");
+                res.send("Reset sucessful.");
+            } else {
+                console.log("Reset unsuccessful.");
+                res.send("Reset unsuccessful.");
+            }
+        });
+    } else {
+        console.log("Password incorrect.");
+    }
 })
 
 app.listen(PORT, () => {

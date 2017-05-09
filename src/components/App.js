@@ -12,14 +12,29 @@ export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { "page":"login", "loggedIn":false, "team":null }; 
+        this.state = { "page":"login", "loggedIn":true, "team":{color:"admin"}, "scoreSheet":null }; 
         this.getTeamData = this.getTeamData.bind(this);
+        this.getScoreSheet = this.getScoreSheet.bind(this);
         this.updateState = this.updateState.bind(this);
     }
 
     getTeamData = (team, fn) => {
-        console.log("Getting data from server for team".concat(team.toUpperCase(),"."));
+        console.log("Getting team data from server for team".concat(team.toUpperCase(),"."));
         request.post({ url:"http://localhost:8080/getteamdata", form:{ "team":team } }, (err,res,body) => {
+            if (body) {
+                let data = JSON.parse(body);
+                this.setState({ "team":data });
+                fn(true);
+            } else {
+                this.setState({ "loggedIn":false, "team":null });
+                fn(false);
+            }
+        })
+    }
+
+    getScoreSheet = (team, fn) => {
+        console.log("Getting score sheet from server for team".concat(team.toUpperCase(),"."));
+        request.get("http://localhost:8080/getscoresheet", (err,res,body) => {
             if (body) {
                 let data = JSON.parse(body);
                 this.setState({ "team":data });
@@ -46,14 +61,18 @@ export default class App extends Component {
 
     render() {
         const logIn = (team, members) => {
-            this.getTeamData(team, (res) => {
-                if (res) {
-                    this.setState({ "loggedIn":true });
-                    console.log("Retrived data successfully.")
-                } else {
-                    console.log("Retrived data unsuccessfully.");
-                }
-            });
+            if (team=="admin") {
+                this.setState({"loggedIn":true, "team":{"color":"admin"}});
+            } else {
+                this.getTeamData(team, (res) => {
+                    if (res) {
+                        this.setState({ "loggedIn":true });
+                        console.log("Retrived data successfully.")
+                    } else {
+                        console.log("Retrived data unsuccessfully.");
+                    }
+                });
+            }
         }
 
         const logOut = () => this.setState({ "loggedIn":false, "team":null });

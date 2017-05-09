@@ -17,6 +17,12 @@ let getTeam = (team, fn) => {
     })
 }
 
+let getScoreSheet = (fn) => {
+    fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
+        return null;
+    })
+}
+
 let getSubmission = (team, fn) => {
     fs.readFile(path.join(__dirname, "submissionSheet.json"), (err, data) => {
         if (err) {
@@ -52,7 +58,7 @@ let getPassword = (team, fn) => {
     })
 }
 
-let getData = (team, fn) => {
+let getTeamData = (team, fn) => {
     console.log("Retrieving questions for ".concat(team.toUpperCase()));
     fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
         if (err) {
@@ -73,7 +79,7 @@ let getData = (team, fn) => {
                         color: team
                     };
                     while (officialQuestions[i] && response.questions.length<5) {
-                        if (teams[team].questions[i]!="correct") {
+                        if (teams[team].questions[i]==null || !teams[team].questions[i].correct) {
                             console.log("Adding question ".concat(i, " to stack of ", team));
                             response.questions.push(officialQuestions[i]);
                         }
@@ -105,26 +111,35 @@ let modifyPassword = (team, new_password, fn) => {
     })
 }
 
-let updateScore = (team, question, fn) => {
-    console.log("Updating score...");
+let updateScore = (team, question, correct, fn) => {
+    console.log("Updating team sheet...");
     fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
+            fn(false);
         } else {
             let file = JSON.parse(data);
-            if (file[team].questions[question]!==null && file[team].questions[question] == "correct") {
+            if (file[team].questions[question]!=null && file[team].questions[question].correct) {
                 console.log("Points have been already added.");
                 fn(true);
             } else {
-                file[team].points++;
-                file[team].questions[question] = "correct";
+                if (file[team].questions[question]) {
+                    file[team].questions[question].correct = correct;
+                    file[team].questions[question].attempts++;
+                } else {
+                    file[team].questions[question] = {
+                        "correct": correct,
+                        "attempts": 1
+                    };
+                }
+                (correct) ? file[team].points++ : null;
                 fs.writeFile(path.join(__dirname, "teamSheet.json"), JSON.stringify(file), (err) => {
                     if (err) {
                         console.log(err);
                         fn(false);
                     } else {
-                        console.log("Point successfully added.");
-                        fn(true);
+                        console.log("Team sheet successfully updated.");
+                        fn(correct);
                     };
                 });
             }
@@ -139,69 +154,35 @@ let addSubmission = (team, question, answer, solvers, fn) => {
             console.log(err);
             fn(false);
         } else {
-            try {
-                let submissionSheet = JSON.parse(data);
-                const date = new Date();
-                validateAnswer(question, answer, (correct) => {
-                    const id = getRandomArbitrary(0,100000000000000);
-                    const newSubmission = 
-                    {
-                        "color":team,
-                        "question":question,
-                        "answer":answer,
-                        "solvers":solvers,
-                        "time":date.getHours().toString().concat(":",date.getMinutes().toString()),
-                        "correct":correct,
-                        "id": id,
-                    };
-                    console.log("New submission: \n" + JSON.stringify(newSubmission));
-                    submissionSheet.submissions.push(newSubmission);
-                    const json = JSON.stringify(submissionSheet);
-                    fs.writeFile(path.join(__dirname, "submissionSheet.json"), json, (err) => {
-                        if (err) {
-                            console.log(err);
-                            fn(false);
-                        } else {
-                            console.log("Submission was recorded.")
-                            if (correct) {
-                                updateScore(team, question, fn);
-                            } else {
-                                fn(false);
-                            }
-                        }   
-                    });
-                });
-            } catch (e) {
-                const date = new Date();
+            let submissionSheet = JSON.parse(data);
+            const date = new Date();
+            validateAnswer(question, answer, (correct) => {
                 const id = getRandomArbitrary(0,100000000000000);
-                validateAnswer(question, answer, (correct) => {
-                    const newSubmission = 
-                    {
-                        "color":team,
-                        "question":question,
-                        "answer":answer,
-                        "solvers":solvers,
-                        "time":date.getHours().toString().concat(":",date.getMinutes().toString()),
-                        "correct":correct,
-                        "id": id
-                    };
-                    console.log("New submission: \n" + JSON.stringify(newSubmission));
-                    const submissionSheet = {"submission":[newSubmission]};
-                    const json = JSON.stringify(submissionSheet);
-                    fs.writeFile(path.join(__dirname, "submissionSheet.json"), json, (err) => {
-                        if (err) {
-                            console.log(err);
-                            fn(false);
-                        } else {
-                            if (correct) {
-                                updateScore(team, question, fn);
-                            } else {
-                                fn(false);
-                            }
-                        }   
-                    });            
+                const newSubmission = 
+                {
+                    "color":team,
+                    "question":question,
+                    "answer":answer,
+                    "solvers":solvers,
+                    "time":date.getHours().toString().concat(":",date.getMinutes().toString()),
+                    "correct":correct,
+                    "id": id,
+                };
+                console.log("New submission: \n" + JSON.stringify(newSubmission));
+                submissionSheet.submissions.push(newSubmission);
+                const json = JSON.stringify(submissionSheet);
+                fs.writeFile(path.join(__dirname, "submissionSheet.json"), json, (errr) => {
+                    if (errr) {
+                        console.log(errr);
+                        fn(false);
+                    } else {
+                        console.log("Submission was recorded.")
+                        updateScore(team, question, correct, (res) => {
+                            fn(res);
+                        });
+                    }   
                 });
-            }
+            });
         }
     });
 }
@@ -339,6 +320,93 @@ let addOfficialAnswer = (q, a) => {
     })
 }
 
+
+let reset = (n, fn) => {
+    console.log("Starting reseting in database.");
+    const loginSheet = {
+        "admin": "2382017",
+        "red": null,
+        "white": null,
+        "black": null,
+        "blue": null
+    };
+    const submissionSheet = {
+        "submissions": []
+    }
+    let teamSheet = {
+        "red": 
+            {
+                "color":"red",
+                "points":0,
+                "members": [],
+                "questions": {}
+        },
+        "white":
+            {
+                "color":"white",
+                "points":0,
+                "members": [],
+                "questions": {}
+            },
+        "blue":
+            {
+                "color":"blue",
+                "points":0,
+                "members": [],
+                "questions": {}
+            },
+        "black":
+            {
+                "color":"black",
+                "points":0,
+                "members": [],
+                "questions": {}
+            }
+    }
+    let questionSheet = {};
+    for (let i=1;i<=n;i++) {
+        teamSheet["red"].questions[i] = {"correct":false,"attempts":0};
+        teamSheet["black"].questions[i] = {"correct":false,"attempts":0};
+        teamSheet["white"].questions[i] = {"correct":false,"attempts":0};
+        teamSheet["blue"].questions[i] = {"correct":false,"attempts":0};
+        questionSheet[i] = {"number":i};
+    }
+    fs.writeFile(path.join(__dirname, "loginSheet.json"), JSON.stringify(loginSheet), (err) => {
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            console.log("loginSheet reset.");
+            fs.writeFile(path.join(__dirname, "submissionSheet.json"), JSON.stringify(submissionSheet), (err1) => {
+                if (err1) {
+                    console.log(err1);
+                    fn(false);
+                } else {
+                    console.log("submissionSheet reset.");
+                    fs.writeFile(path.join(__dirname, "questionSheet.json"), JSON.stringify(questionSheet), (err2) => {
+                        if (err2) {
+                            console.log(err2);
+                            fn(false);
+                        } else {
+                            console.log("questionSheet reset.");
+                            fs.writeFile(path.join(__dirname, "teamSheet.json"), JSON.stringify(teamSheet), (err3) => {
+                                if (err3) {
+                                    console.log(err3);
+                                    fn(false);
+                                } else {
+                                    console.log("teamSheet reset.");
+                                    fn(true);
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    });
+
+}
+
 let engine = (method, object, specifier, value, fn) => {
     if (method=="get") {
         if (object=="team") {
@@ -348,7 +416,7 @@ let engine = (method, object, specifier, value, fn) => {
         } else if (object=="password") {
             getPassword(specifier, (res) => fn(res));
         } else if (object=="data") {
-            getData(specifier, (res) => fn(res));
+            getTeamData(specifier, (res) => fn(res));
         } else {
             return fn(false);
         }
@@ -372,6 +440,8 @@ let engine = (method, object, specifier, value, fn) => {
         }
     } else if (method=="login") {
         validateLogin(specifier, value, (res) => fn(res));
+    } else if (method=="reset") {
+        reset(value, fn);
     } else {
         fn(false);
     }
