@@ -3,17 +3,13 @@ import ReactDOM from 'react-dom';
 import TeamRow from './TeamRow.js';
 import './PatchTable.css';
 
-const datab = require('../data/database.js');
-
 const solvers = ["lukas cerny 12", "leonard euler 8", "carl gauss 3"];
 
 export default class PatchTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-
-        }
+        this.props.updateScoreSheet();
     }
 
     render() {
@@ -32,10 +28,10 @@ export default class PatchTable extends React.Component {
                 <ul>
                     <li className="teamDescriptionNameBox">Team</li>
                     <li className="teamDescriptionNameBox">Points</li>
-                    {Object.keys(teams.red.questions).map((el,i) => <li className="teamDescriptionPointsBox">{i+1}</li>)}
+                    {Object.keys(this.props.scoreSheet.red.questions).map((el,i) => <li className="teamDescriptionPointsBox">{i+1}</li>)}
                 </ul>
-                {Object.keys(teams).map(key =>
-                    <TeamRow color={teams[key].color} questions={teams[key].questions} points={teams[key].points} />
+                {Object.keys(this.props.scoreSheet).map(key =>
+                    <TeamRow color={this.props.scoreSheet[key].color} questions={this.props.scoreSheet[key].questions} points={this.props.scoreSheet[key].points} />
                 )}
                 <div className="solversHeadline">Best Solvers</div>
                 {solvers.map((el) => (<div className="solvers">{el}</div>))}

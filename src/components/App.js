@@ -12,10 +12,11 @@ export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { "page":"login", "loggedIn":true, "team":{color:"admin"}, "scoreSheet":null }; 
+        this.state = { "page":"login", "loggedIn":false, "team":null, "scoreSheet":null }; 
         this.getTeamData = this.getTeamData.bind(this);
         this.getScoreSheet = this.getScoreSheet.bind(this);
         this.updateState = this.updateState.bind(this);
+        this.getScoreSheet();
     }
 
     getTeamData = (team, fn) => {
@@ -32,16 +33,14 @@ export default class App extends Component {
         })
     }
 
-    getScoreSheet = (team, fn) => {
-        console.log("Getting score sheet from server for team".concat(team.toUpperCase(),"."));
+    getScoreSheet = () => {
+        console.log("Getting score sheet from server.");
         request.get("http://localhost:8080/getscoresheet", (err,res,body) => {
             if (body) {
                 let data = JSON.parse(body);
-                this.setState({ "team":data });
-                fn(true);
+                this.setState({ "scoreSheet":data });
             } else {
-                this.setState({ "loggedIn":false, "team":null });
-                fn(false);
+                this.setState({ "scoreSheet":null });
             }
         })
     }
@@ -67,9 +66,9 @@ export default class App extends Component {
                 this.getTeamData(team, (res) => {
                     if (res) {
                         this.setState({ "loggedIn":true });
-                        console.log("Retrived data successfully.")
+                        console.log("Retrived team data successfully.");
                     } else {
-                        console.log("Retrived data unsuccessfully.");
+                        console.log("Retrived team data unsuccessfully.");
                     }
                 });
             }
@@ -83,7 +82,7 @@ export default class App extends Component {
             if (this.state.page=="countdown") {
                 return (<TimeCountdown />);
             } else if (this.state.page=="patchtable") {
-                return (<PatchTable />);
+                return (<PatchTable updateScoreSheet={this.getScoreSheet} scoreSheet={this.state.scoreSheet} />);
             } else if (this.state.page=="login") {
                 return (<Login logIn={logIn} logOut={logOut} loggedIn={this.state.loggedIn} team={this.state.team}/>);
             } else if (this.state.page=="myquestions") {

@@ -19,7 +19,14 @@ let getTeam = (team, fn) => {
 
 let getScoreSheet = (fn) => {
     fs.readFile(path.join(__dirname, "teamSheet.json"), (err, data) => {
-        return null;
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            const scoreSheet = JSON.parse(data);
+            console.log("Reading file teamSheet.json successful.");
+            fn(scoreSheet);
+        }
     })
 }
 
@@ -417,6 +424,8 @@ let engine = (method, object, specifier, value, fn) => {
             getPassword(specifier, (res) => fn(res));
         } else if (object=="data") {
             getTeamData(specifier, (res) => fn(res));
+        } else if (object=="scoresheet") {
+            getScoreSheet((res) => fn(res));
         } else {
             return fn(false);
         }
