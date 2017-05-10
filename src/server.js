@@ -102,6 +102,19 @@ app.get('/getscoresheet', (req, res) => {
     })  
 });
 
+app.get('/getbestsolvers', (req, res) => {
+    console.log("Getting best solvers.");
+    database.engine("get", "solvers", null, null, (data) => {
+        if (data) {
+            console.log("Successfully retrieved best solvers.");
+            res.send(data);
+        } else {
+            console.log("Error in retrieving best solvers.");
+            res.send(null);
+        }
+    })  
+});
+
 app.post('/reset', (req,res) => {
     console.log("Reseting...");
     const password = req.body.password;

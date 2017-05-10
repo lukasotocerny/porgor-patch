@@ -6,13 +6,15 @@ import TimeCountdown from './TimeCountdown';
 import Login from './Login';
 import MyQuestions from './MyQuestions.js';
 
-const testTeam = { color:"admin", members:["lukas","ota"], questions:[{"number":1,"problem":"How are you?"}, {"number":2,"problem":"How old are you?"}] };
+const path = require("path");
+
+const HOST = "https://porgor-patch.herokuapp.com";
 
 export default class App extends Component {
 
     constructor() {
         super();
-        this.state = { "page":"login", "loggedIn":false, "team":null, "scoreSheet":null }; 
+        this.state = { "page":"login", "loggedIn":false, "team":null, "scoreSheet":null, "bestSolvers":null }; 
         this.getTeamData = this.getTeamData.bind(this);
         this.getScoreSheet = this.getScoreSheet.bind(this);
         this.updateState = this.updateState.bind(this);
@@ -21,7 +23,7 @@ export default class App extends Component {
 
     getTeamData = (team, fn) => {
         console.log("Getting team data from server for team".concat(team.toUpperCase(),"."));
-        request.post({ url:"http://localhost:8080/getteamdata", form:{ "team":team } }, (err,res,body) => {
+        request.post({ url:HOST.concat("/getteamdata"), form:{ "team":team } }, (err,res,body) => {
             if (body) {
                 let data = JSON.parse(body);
                 this.setState({ "team":data });
@@ -35,10 +37,20 @@ export default class App extends Component {
 
     getScoreSheet = () => {
         console.log("Getting score sheet from server.");
-        request.get("http://localhost:8080/getscoresheet", (err,res,body) => {
+        request.get(HOST.concat("/getscoresheet"), (err,res,body) => {
             if (body) {
                 let data = JSON.parse(body);
                 this.setState({ "scoreSheet":data });
+                console.log("Getting best solvers from server.");
+                request.get(HOST.concat("/getbestsolvers"), (errr, ress, bodyy) => {
+                    if (bodyy) {
+                        let dataa = JSON.parse(bodyy);
+                        this.setState({ "bestSolvers":dataa });
+                        console.log("Data successfully retrieved.");
+                    } else {
+                        this.setState({ "bestSolvers":null });
+                    }
+                })
             } else {
                 this.setState({ "scoreSheet":null });
             }
@@ -74,7 +86,7 @@ export default class App extends Component {
             }
         }
 
-        const logOut = () => this.setState({ "loggedIn":false, "team":null });
+        const logOut = () => this.setState({ "loggedIn":false });
 
         const linkClick = (arg) => this.setState({ "page":arg });
 
@@ -82,11 +94,11 @@ export default class App extends Component {
             if (this.state.page=="countdown") {
                 return (<TimeCountdown />);
             } else if (this.state.page=="patchtable") {
-                return (<PatchTable updateScoreSheet={this.getScoreSheet} scoreSheet={this.state.scoreSheet} />);
+                return (<PatchTable host={HOST} updateScoreSheet={this.getScoreSheet} scoreSheet={this.state.scoreSheet} bestSolvers={this.state.bestSolvers} />);
             } else if (this.state.page=="login") {
-                return (<Login logIn={logIn} logOut={logOut} loggedIn={this.state.loggedIn} team={this.state.team}/>);
+                return (<Login host={HOST} logIn={logIn} logOut={logOut} loggedIn={this.state.loggedIn} team={this.state.team}/>);
             } else if (this.state.page=="myquestions") {
-                return (<MyQuestions updateState={this.updateState} loggedIn={this.state.loggedIn} team={this.state.team} />)
+                return (<MyQuestions host={HOST} updateState={this.updateState} loggedIn={this.state.loggedIn} team={this.state.team} />)
             } else {
                 return (<TimeCountdown />);
             }

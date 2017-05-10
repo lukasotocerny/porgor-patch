@@ -1,6 +1,6 @@
 const request = require('request');
 const database = require('./data/database.js');
-
+const path = require("path");
 console.log("Starting a client.");
 
 const postRequest = () => request({url: "http://localhost:8080/login"}, function(err,res,body) {
@@ -15,4 +15,4 @@ const databaseQuery = () => database.addMember("blue","novyblue",()=>console.log
 
 const data = {"id":1,"team":"red"};
 
-console.log(data.id);
+console.log(path.join("http://localhost:8080", "login"));

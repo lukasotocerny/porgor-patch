@@ -2,6 +2,8 @@ import React from 'react';
 import request from 'request';
 import './MyQuestions.css';
 
+const path = require("path");
+
 export default class MyQuestions extends React.Component {
 
     constructor(props) {
@@ -39,7 +41,7 @@ export default class MyQuestions extends React.Component {
         console.log("Submit button clicked.");
         if (this.state.answer && this.state.solvers.length>0) {
             console.log("Conditions met. Sending request.");
-            request.post({url:"http://localhost:8080/submit", form:{ "team":this.props.team.color, "question":this.state.currentQuestion, "answer":this.state.answer, "solvers":this.state.solvers }}, (err,res,body) => {
+            request.post({url:this.props.host.concat("/submit"), form:{ "team":this.props.team.color, "question":this.state.currentQuestion, "answer":this.state.answer, "solvers":this.state.solvers }}, (err,res,body) => {
                 if (body=="correct") {
                     this.props.updateState((data) => {
                         this.setState({"correct":"correct", "answer":"", "solvers":[]});

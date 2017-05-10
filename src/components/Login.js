@@ -2,6 +2,7 @@ import React from 'react';
 import './Login.css';
 import AdminPage from './AdminPage.js';
 
+const path = require("path");
 const request = require('request');
 
 export default class Login extends React.Component {
@@ -24,7 +25,7 @@ export default class Login extends React.Component {
             
     validateLogInFromServer = () => {
         if (this.state.password && this.state.password!="") {
-            request.post({url:"http://localhost:8080/login",form:{"team":this.state.team, "password":this.state.password}}, (err, res, body) => {
+            request.post({url:this.props.host.concat("/login"),form:{"team":this.state.team, "password":this.state.password}}, (err, res, body) => {
                 if (err) {
                     console.log("Error in trying to validate login credentials.");
                     this.setState({ "password":"", "serverResponse":"Error in trying to validate login credentials." });
@@ -63,7 +64,7 @@ export default class Login extends React.Component {
             if (this.props.team.color=="admin") {
                 return (
                     <div>
-                        <AdminPage />
+                        <AdminPage host={this.props.host} />
                         <button className="loginButton" onClick={()=>this.props.logOut()}>Log out</button>
                     </div>
                 )
@@ -93,7 +94,7 @@ export default class Login extends React.Component {
                         </label>
                         <label className="labelText">
                             <span>Password:</span>
-                            <input onChange={this.changePassword} className="inputLogin" type="text" name="name" />
+                            <input value={this.state.password} onChange={this.changePassword} className="inputLogin" type="text" name="name" />
                         </label>
                     </form>
                     <button className="loginButton" onClick={()=>this.validateLogInFromServer(this.state.team, this.state.password)}>Login</button>

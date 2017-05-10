@@ -14,15 +14,6 @@ export default class PatchTable extends React.Component {
 
     render() {
 
-        const teams = {"red":{"color":"red","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
-        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}},
-        "blue":{"color":"blue","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
-        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}},
-        "black":{"color":"black","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
-        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}},
-        "white":{"color":"white","points":4,"questions":{"1":{"correct":true,"attempts":2},"2":{"correct":true,"attempts":2},"3":{"correct":true,"attempts":2},"4":{"correct":true,"attempts":2},
-        "5":{"correct":true,"attempts":2},"6":{"correct":true,"attempts":2},"7":{"correct":true,"attempts":2},"8":{"correct":true,"attempts":2},"9":{"correct":true,"attempts":2},"10":{"correct":true,"attempts":2}}}}
-
         return (
             <div style={{paddingTop:15,marginRight:10}}>
                 <ul>
@@ -34,7 +25,7 @@ export default class PatchTable extends React.Component {
                     <TeamRow color={this.props.scoreSheet[key].color} questions={this.props.scoreSheet[key].questions} points={this.props.scoreSheet[key].points} />
                 )}
                 <div className="solversHeadline">Best Solvers</div>
-                {solvers.map((el) => (<div className="solvers">{el}</div>))}
+                {(this.props.bestSolvers) ? this.props.bestSolvers.map((el) => (<div className="solvers">{el.solver} --- {el.number}</div>)) : null}
             </div>
         )
     }

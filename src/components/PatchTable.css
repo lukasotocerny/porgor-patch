@@ -59,7 +59,7 @@
 
 .solvers {
     font-size: 13px;
-    text-transform: uppercase;
+    text-transform: lowercase;
     color: rgba(50,50,50,0.8);
     padding: 5px;
 }

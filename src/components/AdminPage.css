@@ -14,6 +14,29 @@
     padding-left: 20px;
 }
 
+.labelText, .labelTextR {
+    color: rgba(50,50,50,0.8);;
+    margin-top: 20px;
+}
+
+.labelTextR {
+    margin-top: 70px;
+}
+
+.labelTextMini {
+    color: rgba(50,50,50,0.8);;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.resetForm {
+    margin-top: 5px;
+}
+
+.queryForm {
+    margin-top: 5px;
+}
+
 .queryButton {
     margin-top: 5px;
     width: 100px;

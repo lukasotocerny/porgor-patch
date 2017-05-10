@@ -99,6 +99,19 @@ let getTeamData = (team, fn) => {
     })
 }
 
+let getQuestion = (fn) => {
+    console.log("Getting questions...");
+    fs.readFile(path.join(__dirname, "questionSheet.json"), (err, data) => {
+        if (err) {
+            console.log(err);
+            fn(false);
+        } else {
+            const questions = JSON.parse(data);
+            fn(questions);
+        }
+    })
+}
+
 let modifyPassword = (team, new_password, fn) => {
     fs.readFile(path.join(__dirname, "loginSheet.json"), (err, data) => {
         if (err) {
@@ -310,19 +323,26 @@ let addMember = (team, member, fn) => {
     })
 }
 
-let addOfficialAnswer = (q, a) => {
-    fs.readFile("answerSheet.json", (err, data) => {
+let addQuestion = (number, problem, answer, fn) => {
+    fs.readFile(path.join(__dirname, "questionSheet.json"), (err, data) => {
         if (err) {
             console.log(err);
         } else {
-            try {
-                let answers = JSON.parse(data);
-                answers[q] = a;
-                fs.writeFile('answerSheet.json', JSON.stringify(answers), (err) => (err) ? console.log(err) : console.log("Answer for question " + q + " was recorded."));
-            } catch (e) {
-                let answers = {[q] : a};
-                fs.writeFile('answerSheet.json', JSON.stringify(answers), (err) => (err) ? console.log(err) : console.log("Answer for question " + q + " was recorded."));
-            }
+            let questions = JSON.parse(data);
+            questions[number] = {
+                "problem": problem,
+                "answer": answer,
+                "number": number
+            };
+            fs.writeFile(path.join(__dirname, 'questionSheet.json'), JSON.stringify(questions), (err) => {
+                if (err) {
+                    console.log(err);
+                    fn(false);
+                } else {
+                    console.log("Question " + number + " has been added.");
+                    fn(true);
+                }
+            });
         }
     })
 }
@@ -414,6 +434,108 @@ let reset = (n, fn) => {
 
 }
 
+let getBestSolvers = (fn) => {
+    const minArr = (arr) => {
+        let min = arr[0];
+        for (let i=1;i<arr.length;i++) {
+            if (arr[i]<min) min=arr[i];
+        }
+        return min;
+    }
+    const bestSolvers = (sols) => {
+        let result = [];
+        let numbers = [];
+        let min;
+        Object.keys(sols).map((el) => {
+            if (result.length<3) {
+                result.push({"solver":el,"number":sols[el]});
+                numbers.push(sols[el]);
+            } else {
+                min = minArr(numbers);
+                if (sols[el] > min) {
+                    result.filter((ell) => ell.number==min);
+                    numbers.filter((ell) => ell==min);
+                    result.push({"solver":el,"number":sols[el]});
+                    numbers.push(sols[el]);
+                } else if (sols[el]==min) {
+                    result.push({"solver":el,"number":sols[el]});
+                }
+            }
+        })
+        if (result.length==0) {
+            return false;
+        } else if (result.length==1) {
+            return result;
+        } else if (result.length==2) {
+            if (result[0].number>=result[1].number) {
+                return result;
+            } else {
+                const temp = result[0];
+                result[0] = result[1];
+                result[1] = temp;
+                return result;
+            }
+        } else {
+            let temp;
+            if (result[0].number<result[1].number) {
+                temp = result[0];
+                result[0] = result[1];
+                result[1] = temp;
+            }
+            if (result[1].number<result[2].number) {
+                temp = result[1];
+                result[1] = result[2];
+                result[2] = temp;
+            }
+            if (result[0].number<result[1].number) {
+                temp = result[0];
+                result[0] = result[1];
+                result[1] = temp;
+            }
+            return result;
+        }
+    }
+    let solvers = {};
+    fs.readFile(path.join(__dirname, "submissionSheet.json"), (err, data) => {
+        if (err) {
+            console.log("Error in reading submissionSheet.json ".concat(err));
+            fn(false);
+        } else {
+            const submissions = JSON.parse(data).submissions;
+            for (let i=0;i<submissions.length;i++) {
+                if (submissions[i].correct) {
+                    submissions[i].solvers.map((el) => {
+                        if (solvers[el]) {
+                            solvers[el]++;
+                        } else {
+                            solvers[el] = 1;
+                        }
+                    })
+                }
+            }
+            console.log("Calculating best solvers...");
+            fn(bestSolvers(solvers));
+        }
+    })
+}
+
+let validateQuestionInput = (text) => {
+    const args = text.split('||');
+    if (args.length==3) {
+        if (!(isNaN(args[0]) || isNaN(args[2])) && args[0].length>0 && args[2].length>0) {
+            return {
+                "number": args[0],
+                "problem": args[1],
+                "answer": args[2]
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
 let engine = (method, object, specifier, value, fn) => {
     if (method=="get") {
         if (object=="team") {
@@ -426,6 +548,10 @@ let engine = (method, object, specifier, value, fn) => {
             getTeamData(specifier, (res) => fn(res));
         } else if (object=="scoresheet") {
             getScoreSheet((res) => fn(res));
+        } else if (object=="solvers") {
+            getBestSolvers((res) => fn(res))
+        } else if (object=="question") {
+            getQuestion((res) => fn(res))
         } else {
             return fn(false);
         }
@@ -436,6 +562,13 @@ let engine = (method, object, specifier, value, fn) => {
             addPassword(specifier, value, (res) => fn(res));
         } else if (object=="submission") {
             addSubmission(specifier, value.question, value.answer, value.solvers, (res) => fn(res));        
+        } else if (object=="question") {
+            const args = validateQuestionInput(value);
+            if (args) {
+                addQuestion(args.number, args.problem, args.answer, (res) => fn(res));
+            } else {
+                fn(false);
+            }
         } else {
             fn(false);
         }

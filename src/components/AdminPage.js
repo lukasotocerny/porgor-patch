@@ -3,6 +3,8 @@ import './AdminPage.css';
 import request from 'request';
 import AdminPageQuery from './AdminPageQuery.js';
 
+const path = require("path");
+
 export default class AdminPage extends React.Component {
 
     constructor(props) {
@@ -15,7 +17,7 @@ export default class AdminPage extends React.Component {
 
     resetScore = () => {
         if (this.state.n && this.state.password) {
-            request.post({url:"http://localhost:8080/reset", form:{"password":this.state.password,"n":this.state.n}}, (err,res,body) => {
+            request.post({url:this.props.host.concat("/reset"), form:{"password":this.state.password,"n":this.state.n}}, (err,res,body) => {
                 this.setState({"response":body});
                 setTimeout(() => {
                     this.setState({"response":null});
@@ -40,13 +42,24 @@ export default class AdminPage extends React.Component {
     render() {
         return (
             <div className="adminPage">
-                <span>Number of questions</span>
-                <input onChange={this.changeNQuestions}/>
-                <span>Password</span>
-                <input onChange={this.changePassword}/>
-                <button onClick={this.resetScore}>Reset</button>
+                <p className="labelText">QUERY</p>
+                <p className="labelTextMini">As values for adding questions use format "number||question||answer", e.g. 1||What is 1+1?||2</p>
+                <AdminPageQuery host={this.props.host} />
+                <p className="labelTextR">RESET</p>
+                <ul>
+                    <form className="resetForm">
+                        <li><label className="labelText">
+                            Number of Questions: 
+                            <input onChange={this.changeNQuestions} className="inputLogin" type="text" />
+                        </label></li>
+                        <li><label className="labelText">
+                            Admin password:
+                            <input onChange={this.changePassword} className="inputLogin" type="text" />
+                        </label></li>
+                    </form>
+                </ul>
+                <button className="queryButton" onClick={this.resetScore}>Reset</button>
                 <p>{this.state.response}</p>
-                <AdminPageQuery />
             </div>
         )
     }
